@@ -16,7 +16,7 @@ data "azurerm_key_vault" "asomkv" {
   resource_group_name = data.azurerm_resource_group.asom.name
 
 }
-data "azurerm_key_vault_secret" "servicprincipalsecret" {
+data "azurerm_key_vault_secret" "serviceprincipalsecret" {
   name         = "serviceprincipalsecret"
   key_vault_id = data.azurerm_key_vault.asomkv.id
 }
