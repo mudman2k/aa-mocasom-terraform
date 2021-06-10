@@ -11,8 +11,15 @@ provider "azurerm" {
 data "azurerm_resource_group" "asom" {
   name = "${var.prefix}-rg"
 }
+data "azurerm_key_vault" "asomkv" {
+  name                = "${var.resprefix}kv1"
+  resource_group_name = data.azurerm_resource_group.asom.name
 
-
+}
+data "azurerm_key_vault_secret" "servicprincipalsecret" {
+  name         = "serviceprincipalsecret"
+  key_vault_id = data.azurerm_key_vault.asomkv.id
+}
 
 resource "azurerm_storage_account" "asom-storage" {
   name                     = "${var.resprefix}storage"
@@ -23,34 +30,6 @@ resource "azurerm_storage_account" "asom-storage" {
   account_kind             = "StorageV2"
 }
 
-resource "azurerm_key_vault" "asomkv" {
-  name                        = "${var.resprefix}kv"
-  location                    = data.azurerm_resource_group.asom.location
-  resource_group_name         = data.azurerm_resource_group.asom.name
-  enabled_for_disk_encryption = true
-  tenant_id                   = var.tenet_id
-  soft_delete_retention_days  = 7
-  purge_protection_enabled    = false
-
-  sku_name = "standard"
-
-  access_policy {
-    tenant_id = var.tenet_id
-    object_id = var.client_id
-
-    key_permissions = [
-      "Get",
-    ]
-
-    secret_permissions = [
-      "Get",
-    ]
-
-    storage_permissions = [
-      "Get",
-    ]
-  }
-}
 
 
 
